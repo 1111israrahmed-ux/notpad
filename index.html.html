@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vision Notepad </title>
+<style>
+/* ---------- Global ---------- */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+body {
+  background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items:center;
+  padding: 140px;
+}
+
+/* ---------- Notepad Container ---------- */
+.container {
+  background: rgba(20, 25, 35, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 1100px;
+  overflow: hidden;
+}
+
+/* ---------- Left Side (Editor) ---------- */
+.editor {
+  flex: 3;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+header h2 {
+  color: #fff;
+  font-size: 20px;
+}
+.buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+button {
+  background: #34495e;
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+}
+button:hover {
+  background: #3b5998;
+}
+button.active {
+  background: #27ae60;
+}
+textarea, input {
+  background: #1b2838;
+  color: #fff;
+  border: 1px solid #34495e;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 15px;
+  width: 100%;
+  outline: none;
+}
+textarea {
+  resize: none;
+  height: 300px;
+}
+
+/* ---------- Right Side (Notes List) ---------- */
+.sidebar {
+  flex: 1;
+  background: #131a24;
+  padding: 20px;
+  border-left: 1px solid #2b3a4a;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sidebar input {
+  background: #0e141b;
+}
+.note-item {
+  background: #1b2838;
+  border: 1px solid #2b3a4a;
+  border-radius: 8px;
+  padding: 8px;
+  color: #ddd;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.note-item:hover {
+  background: #22344a;
+}
+.note-item span {
+  flex: 1;
+}
+.note-item button {
+  background: #c0392b;
+  border: none;
+  color: white;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.note-item button:hover {
+  background: #e74c3c;
+}
+
+/* ---------- Footer / Status ---------- */
+.status {
+  font-size: 13px;
+  color: #bbb;
+  margin-top: 10px;
+}
+
+/* ---------- White Pages Below ---------- */
+.white-section,
+.page, .page1, .page2, .page3, .page4 {
+  width: 100%;
+  max-width: 1100px;
+  background: #fff;
+  color: #000;
+  border-radius: 10px;
+  padding: 30px;
+  min-height: 500px;
+  margin-top: 30px;
+}
+
+/* Adjust negative margins for stacking pages */
+.page { margin-top: -106px; padding-left: 300px; text-align:center; }
+.page2 { margin-top: -500px; padding-left: 300px; text-align:center; }
+.page3 { margin-top: -400px; }
+.page4 { margin-top: -500px; padding-left: 300px; text-align:center; }
+
+/* ---------- Responsive ---------- */
+
+/* Medium Screens */
+@media(max-width:1024px){
+  body{
+    padding: 80px 20px;
+  }
+  .page, .page2, .page4{
+    padding-left:150px;
+  }
+}
+
+/* Tablets / Small Laptops */
+@media(max-width:768px){
+  body{
+    padding: 40px 15px;
+  }
+  .container{
+    flex-direction: column;
+  }
+  .sidebar{
+    border-left:none;
+    border-top:1px solid #2b3a4a;
+  }
+  header{
+    flex-direction: column;
+    text-align:center;
+    gap:10px;
+  }
+  .buttons{
+    justify-content:center;
+  }
+  textarea{
+    height:220px;
+  }
+  .page, .page1, .page2, .page3, .page4{
+    padding-left:20px !important;
+    text-align:left !important;
+    margin-top:20px !important;
+    min-height:350px;
+  }
+}
+
+/* Phones */
+@media(max-width:480px){
+  body{
+    padding:20px 10px;
+  }
+  button{
+    padding:6px 10px;
+    font-size:12px;
+  }
+  textarea{
+    height:180px;
+    font-size:14px;
+  }
+  .white-section,
+  .page,.page1,.page2,.page3,.page4{
+    padding:15px;
+    min-height:300px;
+    margin-top:15px !important;
+  }
+}
+
+/* Very Small Phones */
+@media(max-width:350px){
+  button{
+    width:100%;
+    margin-bottom:6px;
+  }
+  header h2{
+    font-size:16px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="editor">
+    <header>
+      <h2>📝 Vision Notepad</h2>
+      <div class="buttons">
+        <button onclick="newNote()">New</button>
+        <button onclick="saveNote()">Save</button>
+        <button onclick="downloadNote()">Download</button>
+        <button onclick="clearNote()">Clear</button>
+        <button id="autoBtn" onclick="toggleAutosave()" class="active">Autosave: ON</button>
+      </div>
+    </header>
+
+    <input type="text" id="title" placeholder="Note title (optional)">
+    <textarea id="content" placeholder="Type your text here..."></textarea>
+    <div class="status" id="status">Ready</div>
+  </div>
+
+  <div class="sidebar">
+    <input type="text" id="search" placeholder="Search notes by title...">
+    <div id="noteList">No saved notes yet.</div>
+  </div>
+</div>
+
+<!-- Two white pages below -->
+<div class="white-section">
+  <h3> Simple Interface</h3>
+  <p>It’s a plain text editor with a clean and minimal design.<br>The interface is simple and distraction-free.<br>It helps you focus entirely on writing what you need.</p>
+   <div class="page"><h3>AutoSave</h3>
+   <p > Your notes are saved automatically.<br>You will never lose them.<br>All changes are stored in your browser.<p></div>
+ <div class="page1"><h3>WordCount</h3>
+   <p > Count how many words are in your text while you type.<br> The number of words changes as you write or edit<p></div>
+ <div class="page2"><h3>WordCount</h3>
+   <p > Find and Replace lets you quickly search for a word or<br> phrase on the page and replace it with something else.<p></div>
+<div class="page3"><h3>SpellingCheck</h3>
+   <p > It uses your browser’s spell checker.<br>It helps you find spelling mistakes quickly.<br>Wrong words have a red line under them.<br>
+Right-click the word to choose the correct spelling.<p></div>
+<div class="page4"><h3>WordCount</h3>
+   <p >It’s very easy to get a printed copy of your notes.<br>You can make your document ready for printing.<br>You can also save it as a PDF file.<br><p></div>
+</div>
+
+<h1 style="padding-top:150px">overview</h1>
+<br>
+<p> 
+
+Online Notepad is a simple and reliable browser based text editor that lets you create and edit multiple plain-text documents without any registration or login. It’s perfect for writing quick notes or preparing basic printable pages.
+
+One of its standout features is the autosave function, which saves your work every second. This protects your notes from being lost if you accidentally close the tab or if your browser crashes. When you return to the site, your document is automatically restored even after closing and reopening your browser. You can also download your files directly to your computer whenever you need.
+
+Online Notepad includes all the essential tools you expect from a standard text editor  copy, cut, paste, a character map, word counter, open and save files, and print options.
+</p>
+<h1 style="padding-top:150px">Browser Specification</h1>
+<br>
+<p>Online Notepad supports modern web browsers including Google Chrome, Mozilla Firefox, Safari, Opera, Internet Explorer and other browser.</p>
+
+<h1 style="padding-top:150px">About</h1>
+<br>
+<p>This web app is a free tool that anyone can use, whether you’re an individual, a student, a company, or even a government office. I originally created this simple notepad for myself to quickly jot down thoughts and ideas that I didn’t want to forget. What started as a small project has greatly improved my daily productivity, and I hope it proves just as helpful for you.
+</p>
+
+<h1 style="padding-top:150px">How to use</h1>
+<br>
+<p>To get the most out of your Online Notepad experience:
+
+Use the 'Save As' feature regularly to backup important notes and document to your computer
+Take advantage of the find and change feature for quick text editing
+Use the word counter to track your writing progress and condition
+Remember that your notes persist between sessions unless you clear your browser files & data</P>
+
+<h1 style="padding-top:150px">Privacy & Security</h1>
+<br>
+<p>We care about your privacy. All your notes are stored only in your browser through localStorage, which means nothing is sent to our servers. Everything you write stays private and secure on your own device. You can safely use this notepad for sensitive information, but we still recommend saving important notes to your computer as a backup
+</p>
+<h1 style="padding-top:150px">Shorts Key</h1>
+<br>
+<p>Increase your productivity with simple keyboard shortcuts for operations like Copy, CTRL+C, Paste CTRL+V, Undo CTRL+Z</p>
+</div>
+<script>
+let autosave = true;
+const titleInput = document.getElementById('title');
+const contentArea = document.getElementById('content');
+const noteList = document.getElementById('noteList');
+const statusText = document.getElementById('status');
+const autoBtn = document.getElementById('autoBtn');
+
+// Load notes
+let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+displayNotes();
+
+// Save note
+function saveNote() {
+  const title = titleInput.value.trim() || "Untitled Note";
+  const content = contentArea.value.trim();
+  if (!content) return alert("⚠️ Write something first!");
+  const timestamp = new Date().toLocaleString();
+
+  const existingIndex = notes.findIndex(n => n.title === title);
+  if (existingIndex >= 0) notes[existingIndex].content = content;
+  else notes.push({ title, content, time: timestamp });
+
+  localStorage.setItem('notes', JSON.stringify(notes));
+  statusText.textContent = "✅ Saved at " + timestamp;
+  displayNotes();
+}
+
+// Autosave
+contentArea.addEventListener('input', () => {
+  if (autosave) saveNote();
+});
+
+// New note
+function newNote() {
+  titleInput.value = '';
+  contentArea.value = '';
+  statusText.textContent = "🆕 New note ready.";
+}
+
+// Clear note
+function clearNote() {
+  titleInput.value = '';
+  contentArea.value = '';
+  statusText.textContent = "🗑️ Cleared.";
+}
+
+// Toggle autosave
+function toggleAutosave() {
+  autosave = !autosave;
+  autoBtn.textContent = autosave ? "Autosave: ON" : "Autosave: OFF";
+  autoBtn.classList.toggle("active", autosave);
+}
+
+// Download as .txt
+function downloadNote() {
+  const title = titleInput.value.trim() || "Untitled_Note";
+  const content = contentArea.value.trim();
+  if (!content) return alert("⚠️ Nothing to download!");
+  const blob = new Blob([content], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = title + ".txt";
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+// Display all notes
+function displayNotes() {
+  if (!notes.length) {
+    noteList.textContent = "No saved notes yet.";
+    return;
+  }
+  noteList.innerHTML = '';
+  notes.forEach((n, i) => {
+    const div = document.createElement('div');
+    div.className = 'note-item';
+    const span = document.createElement('span');
+    span.textContent = n.title;
+    span.onclick = () => loadNote(i);
+    
+    const delBtn = document.createElement('button');
+    delBtn.textContent = "Delete";
+    delBtn.onclick = (e) => {
+      e.stopPropagation();
+      deleteNote(i);
+    };
+
+    div.appendChild(span);
+    div.appendChild(delBtn);
+    noteList.appendChild(div);
+  });
+}
+
+// Load a note
+function loadNote(index) {
+  const note = notes[index];
+  titleInput.value = note.title;
+  contentArea.value = note.content;
+  statusText.textContent = "📂 Loaded: " + note.title;
+}
+
+// Delete a note
+function deleteNote(index) {
+  if (confirm("🗑️ Delete this note permanently?")) {
+    notes.splice(index, 1);
+    localStorage.setItem('notes', JSON.stringify(notes));
+    displayNotes();
+    newNote();
+    statusText.textContent = "❌ Note deleted.";
+  }
+}
+
+// Search notes
+document.getElementById('search').addEventListener('input', (e) => {
+  const term = e.target.value.toLowerCase();
+  const filtered = notes.filter(n => n.title.toLowerCase().includes(term));
+  if (!filtered.length) {
+    noteList.textContent = "No match found.";
+    return;
+  }
+  noteList.innerHTML = '';
+  filtered.forEach((n, i) => {
+    const div = document.createElement('div');
+    div.className = 'note-item';
+    const span = document.createElement('span');
+    span.textContent = n.title;
+    span.onclick = () => loadNote(i);
+    
+    const delBtn = document.createElement('button');
+    delBtn.textContent = "Delete";
+    delBtn.onclick = (e) => {
+      e.stopPropagation();
+      deleteNote(i);
+    };
+    
+    div.appendChild(span);
+    div.appendChild(delBtn);
+    noteList.appendChild(div);
+  });
+});
+</script>
+</body>
+</html>
